@@ -19,6 +19,18 @@
 
 include_recipe "python"
 
+user = "supervisor"
+group = "www-data"
+
+user user do
+  gid      "www-data"
+  home     "/home/supervisor"
+  supports :manage_home => true
+  shell    "/bin/bash"
+  system   true
+  action   :create
+end
+
 # foodcritic FC023: we prefer not having the resource on non-smartos
 if platform_family?("smartos")
   package "py27-expat" do
@@ -37,15 +49,15 @@ python_pip "supervisor" do
 end
 
 directory node['supervisor']['dir'] do
-  owner "root"
-  group "root"
+  owner user
+  group group
   mode "755"
 end
 
 template node['supervisor']['conffile'] do
   source "supervisord.conf.erb"
-  owner "root"
-  group "root"
+  owner user
+  group group
   mode "644"
   variables({
     :inet_port => node['supervisor']['inet_port'],
@@ -58,8 +70,8 @@ template node['supervisor']['conffile'] do
 end
 
 directory node['supervisor']['log_dir'] do
-  owner "root"
-  group "root"
+  owner user
+  group group
   mode "755"
   recursive true
 end
@@ -68,15 +80,15 @@ case node['platform']
 when "debian", "ubuntu"
   template "/etc/init.d/supervisor" do
     source "supervisor.init.erb"
-    owner "root"
-    group "root"
+    owner user
+    group group
     mode "755"
   end
 
   template "/etc/default/supervisor" do
     source "supervisor.default.erb"
-    owner "root"
-    group "root"
+    owner user
+    group group
     mode "644"
   end
 
@@ -85,15 +97,15 @@ when "debian", "ubuntu"
   end
 when "smartos"
   directory "/opt/local/share/smf/supervisord" do
-    owner "root"
-    group "root"
+    owner user
+    group group
     mode "755"
   end
 
   template "/opt/local/share/smf/supervisord/manifest.xml" do
     source "manifest.xml.erb"
-    owner "root"
-    group "root"
+    owner user
+    group group
     mode "644"
     notifies :run, "execute[svccfg-import-supervisord]", :immediately
   end
