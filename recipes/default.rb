@@ -81,7 +81,6 @@ when "debian", "ubuntu"
   end
 
   service "supervisor" do
-    user "www-data"
     action [:enable, :start]
   end
 when "smartos"
