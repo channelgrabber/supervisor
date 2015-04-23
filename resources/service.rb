@@ -52,6 +52,7 @@ attribute :environment, :kind_of => Hash, :default => {}
 attribute :directory, :kind_of => [String, NilClass], :default => nil
 attribute :umask, :kind_of => [NilClass, String], :default => nil
 attribute :serverurl, :kind_of => String, :default => 'AUTO'
+attribute :prefix_timestamp, :kind_of => [TrueClass, FalseClass], :default => true
 
 attribute :eventlistener, :kind_of => [TrueClass,FalseClass], :default => false
 attribute :eventlistener_buffer_size, :kind_of => Integer, :default => nil
