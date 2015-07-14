@@ -31,7 +31,7 @@ action :enable do
     group "root"
     mode "644"
     variables :prog => new_resource
-    notifies :run, "execute[supervisorctl update]", :immediately
+    notifies :run, "execute[supervisorctl update]", :delayed
   end
 end
 
@@ -43,7 +43,7 @@ action :disable do
 
   file "#{node['supervisor']['dir']}/#{new_resource.program_name}.conf" do
     action :delete
-    notifies :run, "execute[supervisorctl update]", :immediately
+    notifies :run, "execute[supervisorctl update]", :delayed
   end
 end
 

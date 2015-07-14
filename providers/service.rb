@@ -84,24 +84,19 @@ action :restart do
 end
 
 def enable_service
-  e = execute "supervisorctl update" do
+  execute "supervisorctl update" do
     action :nothing
     user "root"
   end
 
-  t = template "#{node['supervisor']['dir']}/#{new_resource.service_name}.conf" do
+  template "#{node['supervisor']['dir']}/#{new_resource.service_name}.conf" do
     source "program.conf.erb"
     cookbook "supervisor"
     owner "root"
     group "root"
     mode "644"
     variables :prog => new_resource
-    notifies :run, "execute[supervisorctl update]", :immediately
-  end
-
-  t.run_action(:create)
-  if t.updated?
-    e.run_action(:run)
+    notifies :run, "execute[supervisorctl update]", :delayed
   end
 end
 
@@ -113,7 +108,7 @@ def disable_service
 
   file "#{node['supervisor']['dir']}/#{new_resource.service_name}.conf" do
     action :delete
-    notifies :run, "execute[supervisorctl update]", :immediately
+    notifies :run, "execute[supervisorctl update]", :delayed
   end
 end
 
