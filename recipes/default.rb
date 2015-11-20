@@ -26,8 +26,18 @@ if platform_family?("smartos")
   end
 end
 
+current_version = ""
+current_version = `/usr/local/bin/supervisorctl version` if File.exist?('/usr/local/bin/supervisorctl')
+current_version.strip!
+
+supervisor_action = :upgrade
+supervisor_action = :nothing if current_version == node['supervisor']['version']
+
+Chef::Log.info("Supervisor is currently at version #{current_version}and the version we want is #{node['supervisor']['version']}")
+Chef::Log.info("The action we're going to take is :#{supervisor_action}")
+
 python_pip "supervisor" do
-  action :upgrade
+  action supervisor_action
   package_name "#{node['supervisor']['source']}@#{node['supervisor']['commit']}" if node['supervisor']['commit']
   version node['supervisor']['version'] if node['supervisor']['version']
 end
