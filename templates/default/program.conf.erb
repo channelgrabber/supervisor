@@ -1,5 +1,9 @@
 [<%= @prog.eventlistener ? 'eventlistener' : 'program' %>:<%= @prog.service_name %>]
+<% if @prog.prefix_timestamp %>
+command=bash -c '{ { <%= @prog.command %> | while read LINE; do echo "[`date +\"%Y-%m-%d %H:%M:%S\"`] ${LINE}"; done;  } 3>&1 1>&2 2>&3 | while read LINE; do echo "[`date +\"%Y-%m-%d %H:%M:%S\"`] ${LINE}"; done;  } 3>&2 2>&1 1>&3'
+<% else %>
 command=<%= @prog.command %>
+<% end %>
 process_name=<%= @prog.process_name %>
 numprocs=<%= @prog.numprocs %>
 numprocs_start=<%= @prog.numprocs_start %>
